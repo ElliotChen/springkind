@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: app-emptydir
+spec:
+  containers:
+  - image: alpine
+    name: app01
+    command: ["/bin/sh"]
+    args: ["-c", "echo 'test pvc' >> /mnt/pod/data/test_emptydir_01.txt;while true; do sleep 60; done;"]
+    volumeMounts:
+      - mountPath: "/mnt/pod/data"
+        name: app-storage
+  - image: alpine
+    name: app02
+    command: ["/bin/sh"]
+    args: ["-c", "echo 'test pvc' >> /mnt/pod/data/test_emptydir_02.txt;while true; do sleep 60; done;"]
+    volumeMounts:
+      - mountPath: "/mnt/pod/data"
+        name: app-storage
+  volumes:
+    - name: app-storage
+      emptyDir: {}
