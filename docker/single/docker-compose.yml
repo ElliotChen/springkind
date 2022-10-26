@@ -1,0 +1,36 @@
+version: "3.3"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: abcd1234
+    ports:
+      - 3306:3306
+    healthcheck:
+      test: mysqladmin ping -h localhost
+      interval: 5s
+      timeout: 10s
+      retries: 100
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./data/redis:/data
+
+  spring:
+    image: elliot/single/docker:latest
+    container_name: spring
+    ports:
+      - 8080:8080
+    volumes:
+      - ./config/spring/application-docker.yml:/workspace/config/application-docker.yml
+    depends_on:
+      mysql: 
+        condition: service_healthy

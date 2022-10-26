@@ -1,0 +1,78 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.*
+import org.apache.tools.ant.filters.*
+
+plugins {
+	id("org.springframework.boot") version "2.7.5"
+	id("io.spring.dependency-management") version "1.0.15.RELEASE"
+	kotlin("jvm") version "1.6.21"
+	kotlin("plugin.spring") version "1.6.21"
+	kotlin("plugin.jpa") version "1.6.21"
+}
+
+group = "tw.elliot"
+version = "0.0.1-SNAPSHOT"
+java.sourceCompatibility = JavaVersion.VERSION_17
+
+val activeProfile=project.properties["activeProfile"] ?: "local"
+val imageVersion=project.properties["imageVersion"] ?: "latest"
+
+configurations {
+	compileOnly {
+		extendsFrom(configurations.annotationProcessor.get())
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	//implementation("org.springframework.boot:spring-boot-starter-data-redis")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	testImplementation("org.projectlombok:lombok:1.18.22")
+	compileOnly("org.projectlombok:lombok")
+	implementation("com.mysql:mysql-connector-j:8.0.31")
+	annotationProcessor("org.projectlombok:lombok")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+tasks.withType<KotlinCompile> {
+	kotlinOptions {
+		freeCompilerArgs = listOf("-Xjsr305=strict")
+		jvmTarget = "17"
+	}
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
+}
+
+tasks.getByName<BootBuildImage>("bootBuildImage") {
+	imageName = "elliot/single/$activeProfile:"+imageVersion
+	isVerboseLogging = true
+}
+
+tasks.withType<ProcessResources> {
+	println("Got active profile [$activeProfile]")
+	val filterTokens = mapOf("activeProfile" to activeProfile)
+	filter<ReplaceTokens>("tokens" to filterTokens)
+}
+
+tasks.withType<BootJar> {
+	println("current profile is [$activeProfile]")
+	if (activeProfile == "local") {
+		exclude("application-docker.yml")
+		exclude("application-k8s.yml")
+	} else {
+		exclude("application-*.yml")
+	}
+
+
+}
+

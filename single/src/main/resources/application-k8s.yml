@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    username: root
+    password: ${SECRETS_MYSQL_ROOT_PASSWORD}
+    url: jdbc:mysql://mysql-service:3306/test?serverTimezone=UTC
+  jpa:
+    hibernate:
+      ddl-auto: create
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      repositories:
+        enabled: true
+      host: redis-service
+      port: 6379
