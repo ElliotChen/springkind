@@ -1,0 +1,45 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: single-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: single-vs
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - single-gateway
+  http:
+  - match:
+    - uri:
+        prefix: "/single/"
+    rewrite:
+        uri: "/"
+    route:
+    - destination:
+        host: single-svc
+        port:
+          number: 8080
+  - match:
+    - uri:
+        prefix: "/dev-single/"
+    rewrite:
+        uri: "/"
+    route:
+    - destination:
+        host: dev-single-svc.dev.svc.cluster.local
+        port:
+          number: 8080
