@@ -19,3 +19,9 @@ metadata:
   labels:
     istio-injection: enabled
 ---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+  labels:
+    istio-injection: enabled

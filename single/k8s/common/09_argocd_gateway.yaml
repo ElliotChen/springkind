@@ -1,7 +1,8 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: single-gateway
+  name: argocd-gateway
+  namespace: argocd
 spec:
   selector:
     istio: ingressgateway # use istio default controller
@@ -11,14 +12,4 @@ spec:
       name: http
       protocol: HTTP
     hosts:
-    - "*"
-  # - port:
-  #     number: 443
-  #     name: https
-  #     protocol: HTTPS
-  #   tls:
-  #     #mode: PASSTHROUGH
-  #     credentialName: local-tls
-  #     mode: SIMPLE
-  #   hosts:
-  #   - "*"
+    - "argocd.elliot.tw"
