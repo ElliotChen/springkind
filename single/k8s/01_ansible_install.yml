@@ -1,0 +1,38 @@
+---
+
+- hosts: localhost
+
+  tasks:
+    - name: list ps
+      shell: docker ps
+      register: dockerps
+    
+    - debug: 
+        msg: "{{ dockerps.stdout_lines }}"
+
+    - name: run local registry
+      shell: docker-compose up -f 00_local_registry.yaml
+      when: dockerps.stdout.find('registry:2') == -1
+
+    - name: list kind cluster
+      shell: kind get clusters
+      register: kindrs
+    - debug:
+        msg: "{{kindrs.stdout}}"
+
+    - name: delete kind cluster mbp
+      shell: kind delete cluster --name mbp
+      when: kindrs.stdout.find('mbp') != -1
+
+    - name: create kind cluster
+      shell: kind create cluster --name mbp --config ./common/01_kind_cluster.yaml
+      #register: kindrs
+
+    - name: list kind cluster
+      shell: kind get clusters
+      register: kindrs
+    - debug:
+        msg: "{{kindrs.stdout}}"
+
+    - name: watch coredns status
+      shell: kubectl rollout status -n kube-system deployment/coredns

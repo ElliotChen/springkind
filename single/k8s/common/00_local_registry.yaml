@@ -1,0 +1,16 @@
+version: "3"
+
+networks:
+  kind:
+    name: kind
+    external: true
+
+services:
+  kind-registry:
+    container_name: kind-registry
+    image: registry:2
+    networks:
+      - kind
+    ports:
+      - "127.0.0.1:5000:5000"
+
