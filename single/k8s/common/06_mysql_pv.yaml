@@ -69,6 +69,8 @@ spec:
           mountPath: /etc/mysql/conf.d
         - name: mysql-data
           mountPath: /var/lib/mysql
+        - name: mysql-initdb-script
+          mountPath: /docker-entrypoint-initdb.d
       volumes:
       - name: mysql-config
         configMap:
@@ -76,6 +78,9 @@ spec:
       - name: mysql-data
         persistentVolumeClaim:
           claimName: mysql-pvc
+      - name: mysql-initdb-script
+        configMap:
+          name: mysql-initdb-cm
 ---
 apiVersion: v1
 kind: Service
@@ -92,3 +97,10 @@ spec:
     targetPort: 3306
     nodePort: 31306
 ---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-initdb-cm
+data:
+  initdb.sql: |
+    CREATE DATABASE IF NOT EXISTS test CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
