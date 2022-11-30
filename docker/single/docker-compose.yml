@@ -1,20 +1,20 @@
 version: "3.3"
 
 services:
-  mysql:
-    image: mysql:8.0
-    container_name: mysql
-    environment:
-      MYSQL_ROOT_PASSWORD: abcd1234
-    ports:
-      - 3306:3306
-    healthcheck:
-      test: mysqladmin ping -h localhost
-      interval: 5s
-      timeout: 10s
-      retries: 100
-    volumes:
-      - ./data/mysql:/var/lib/mysql
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: abcd1234
+  #   ports:
+  #     - 3306:3306
+  #   healthcheck:
+  #     test: mysqladmin ping -h localhost
+  #     interval: 5s
+  #     timeout: 10s
+  #     retries: 100
+  #   volumes:
+  #     - ./data/mysql:/var/lib/mysql
 
   redis:
     image: redis:6-alpine
@@ -24,6 +24,24 @@ services:
     volumes:
       - ./data/redis:/data
 
+  postgresql:
+    image: postgres:15.1-alpine
+    container_name: postgresql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      #- ./postgre/conf:/usr/local/etc/redis/redis.conf
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./config/postgres/sql/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    healthcheck:
+      test: nc -z localhost 5432 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   spring:
     image: elliot/single/docker:latest
     container_name: spring
@@ -32,5 +50,5 @@ services:
     volumes:
       - ./config/spring/application-docker.yml:/workspace/config/application-docker.yml
     depends_on:
-      mysql: 
+      postgresql: 
         condition: service_healthy

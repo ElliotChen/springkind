@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: postgres-secret
+  name: mysql-secret
 type: Opaque
 data:
-  user_password: cG9zdGdyZXM=
+  root_password: YWJjZDEyMzQ=
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -30,12 +30,12 @@ spec:
             - name: config-volume
               mountPath: /workspace/config
           env:
-            - name: SECRETS_POSTGRES_PASSWORD
+            - name: SECRETS_MYSQL_ROOT_PASSWORD
               #value: abcd1234
               valueFrom:
                 secretKeyRef:
-                  name: postgres-secret
-                  key: user_password
+                  name: mysql-secret
+                  key: root_password
       volumes:
         - name: config-volume
           configMap:

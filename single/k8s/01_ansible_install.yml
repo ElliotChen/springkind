@@ -11,7 +11,7 @@
         msg: "{{ dockerps.stdout_lines }}"
 
     - name: run local registry
-      shell: docker-compose up -f 00_local_registry.yaml -d
+      shell: docker-compose up -f ./common/00_local_registry.yaml -d
       when: dockerps.stdout.find('registry:2') == -1
 
     - name: list kind cluster

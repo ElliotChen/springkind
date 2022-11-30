@@ -44,14 +44,14 @@
     - name: watch redis status
       shell: kubectl rollout status statefulsets/redis-sts
 
-    - name: install mysql
-      shell: kubectl apply -f ./common/06_mysql_pv.yaml
+    - name: install postgres
+      shell: kubectl apply -f ./common/06_postgres_pv.yaml
       register: krs
     - debug:
         msg: "{{krs.stdout_lines}}"
 
-    - name: watch mysql status
-      shell: kubectl rollout status statefulsets/mysql-sts
+    - name: watch postgres status
+      shell: kubectl rollout status statefulsets/postgres-sts
 
     - name: install namespace
       shell: kubectl apply -f ./common/07_namespaces.yaml

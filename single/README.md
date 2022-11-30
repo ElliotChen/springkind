@@ -326,3 +326,19 @@ transfer-encoding: chunked
 不過還是建議在從一般server轉到K8s的中間，可以先透過docker compose的方式去測試，畢竟這兩者的相似度極高，要考量的env與pv都可以在docker compose裡先想清楚，某方面來說，可以將local -> docker compose -> k8s做為一個設定變更的工作流水線，先前也想過透過kcompose來做這樣的工作，不過還是因為某些原因放棄了。
 
 總之，無論是web系統或是後端api，只要概念正確，轉到K8s都不是難事。
+
+
+
+### cmd
+
+```sh
+
+gradle clean bootBuildImage -x test -PactiveProfile=docker
+gradle clean bootBuildImage -x test -PactiveProfile=k8s
+
+docker tag elliot/single/k8s:latest localhost:5000/elliot/single/k8s:latest
+docker push localhost:5000/elliot/single/k8s:latest
+
+echo -n 'super-secret-password' | base64
+
+```

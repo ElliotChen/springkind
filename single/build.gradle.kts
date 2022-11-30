@@ -35,11 +35,13 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+	implementation("org.postgresql:postgresql")
 	testImplementation("org.projectlombok:lombok:1.18.22")
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.mysql:mysql-connector-j:8.0.31")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	implementation("org.ajoberstar.grgit:grgit-core:4.1.1")
 }
 
 tasks.withType<KotlinCompile> {
@@ -76,3 +78,10 @@ tasks.withType<BootJar> {
 
 }
 
+tasks.register<Copy>("copyDependenciesToLib") {
+	into("$buildDir/libs")
+	from(project.configurations.runtimeClasspath)
+	doLast {
+		println("copyDependenciesToLib:\n  ${project.configurations.runtimeClasspath.get().files.joinToString("\n  ") { it.absolutePath }}\n  ->\n  $buildDir/libs")
+	}
+}

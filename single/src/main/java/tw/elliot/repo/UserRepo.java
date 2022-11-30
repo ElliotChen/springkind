@@ -6,4 +6,5 @@ import tw.elliot.model.User;
 
 @Repository
 public interface UserRepo extends CrudRepository<User, String> {
+
 }

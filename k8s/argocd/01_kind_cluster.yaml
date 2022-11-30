@@ -13,11 +13,20 @@ nodes:
       kubeletExtraArgs:
         node-labels: "ingress-ready=true"
   extraPortMappings:
-  - containerPort: 80
+  - containerPort: 30080
     hostPort: 80
     protocol: TCP
-  - containerPort: 443
+  - containerPort: 30443
     hostPort: 443
+    protocol: TCP
+  - containerPort: 30021
+    hostPort: 15021
+    protocol: TCP
+  - containerPort: 31400
+    hostPort: 31400
+    protocol: TCP
+  - containerPort: 31443
+    hostPort: 31443
     protocol: TCP
 # Macos can't mount a propagation path. https://github.com/kubernetes-sigs/kind/issues/2400
   extraMounts:

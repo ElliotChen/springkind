@@ -12,10 +12,10 @@ import tw.elliot.service.UserService;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-	private final UserRepo userRepo;
+  private final UserRepo userRepo;
 
-	@Override
-	public User findUserById(String id) {
-		return this.userRepo.findById(id).orElse(new User());
-	}
+  @Override
+  public User findUserById(String id) {
+    return this.userRepo.findById(id).orElse(new User());
+  }
 }

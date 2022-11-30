@@ -12,10 +12,11 @@ import tw.elliot.service.UserService;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserCtrl {
-	private final UserService userService;
 
-	@GetMapping(path = "/{id}", produces = "application/json")
-	public User findUserById(@PathVariable String id) {
-		return userService.findUserById(id);
-	}
+  private final UserService userService;
+
+  @GetMapping(path = "/{id}", produces = "application/json")
+  public User findUserById(@PathVariable String id) {
+    return userService.findUserById(id);
+  }
 }
