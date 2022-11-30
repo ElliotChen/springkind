@@ -341,4 +341,14 @@ docker push localhost:5000/elliot/single/k8s:latest
 
 echo -n 'super-secret-password' | base64
 
+
+kustomize build ./overlays/dev
+
+kustomize build ./overlays/default | k apply -f -  
+```
+
+
+```
+http://localhost/single/users/111
+http://localhost/dev-single/users/111
 ```
