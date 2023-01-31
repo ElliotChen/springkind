@@ -21,8 +21,6 @@ spec:
           requests:
             cpu: 10m
             memory: 40Mi
-        nodeSelector:
-            ingress-ready: "true"
         service:
           ports:
           - name: status-port
@@ -70,7 +68,7 @@ spec:
         service: opentelemetry-collector.istio-system.svc.cluster.local
       name: otel
   profile: demo
-  tag: 1.15.2
+  tag: 1.16.1
   values:
     base:
       enableCRDTemplates: false
@@ -206,3 +204,4 @@ spec:
           logging: false
           monitoring: false
           topology: false
+

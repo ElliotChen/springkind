@@ -10,10 +10,11 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <java.version>1.8</java.version>
-    <spring.boot.version>2.7.5</spring.boot.version>
+    <java.version>17</java.version>
+    <spring.boot.version>3.0.0</spring.boot.version>
     <jasypt.version>3.0.4</jasypt.version>
     <kotlin.version>1.7.21</kotlin.version>
+    <kotlin.compiler.jvmTarget>17</kotlin.compiler.jvmTarget>
 
     <docker.image.prefix>elliot</docker.image.prefix>
 
@@ -162,12 +163,25 @@
             <goals>
               <goal>build-info</goal>
               <goal>repackage</goal>
+              <goal>build-image-no-fork</goal>
             </goals>
           </execution>
         </executions>
         <configuration>
           <image>
             <name>${docker.image.prefix}/${project.artifactId}/${activeProfile}:${project.version}</name>
+            <buildpacks>
+              <buildpack>paketo-buildpacks/ca-certificates</buildpack>
+              <buildpack>paketo-buildpacks/bellsoft-liberica</buildpack>
+              <buildpack>paketo-buildpacks/syft</buildpack>
+              <buildpack>paketo-buildpacks/executable-jar</buildpack>
+              <buildpack>paketo-buildpacks/dist-zip</buildpack>
+              <buildpack>paketo-buildpacks/spring-boot</buildpack>
+              <buildpack>gcr.io/paketo-buildpacks/opentelemetry</buildpack>
+            </buildpacks>
+            <env>
+              <BP_OPENTELEMETRY_ENABLED>true</BP_OPENTELEMETRY_ENABLED>
+            </env>
           </image>
           <excludes>
             <exclude>
@@ -199,6 +213,7 @@
         </includes>
         <excludes>
           <exclude>application-docker.yml</exclude>
+          <exclude>application-k8s.yml</exclude>
         </excludes>
         <filtering>true</filtering>
       </resource>

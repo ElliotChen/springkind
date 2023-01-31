@@ -28,13 +28,16 @@
     - debug:
         msg: "{{irs.stdout_lines}}"
 
+    - name: install istio extra addons
+      shell: kubectl apply -f ./extra
+      register: irs
+
     - name: enable default injection
       shell: kubectl label namespace default istio-injection=enabled --overwrite
       register: irs
     - debug:
         msg: "{{irs.stdout_lines}}"
     
-
     - name: install redis
       shell: kubectl apply -f ./common/05_redis_pv.yaml
       register: krs

@@ -1,0 +1,35 @@
+---
+
+- hosts: localhost
+
+  tasks:
+    - name: install default applications
+      shell: kustomize build ./overlays/default | kubectl apply -f -
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: watch default applications status
+      shell: kubectl rollout status -n default deployment/single
+
+    - name: trigger default application
+      shell: curl http://localhost/single/users/111
+      register: crs
+    - debug:
+        msg: "{{crs.stdout_lines}}"
+
+    - name: install dev applications
+      shell: kustomize build ./overlays/dev | kubectl apply -f -
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: watch dev applications status
+      shell: kubectl rollout status -n dev deployment/dev-single
+
+    - name: trigger dev application
+      shell: curl http://localhost/dev-single/users/111
+      register: crs
+    - debug:
+        msg: "{{crs.stdout_lines}}"
+

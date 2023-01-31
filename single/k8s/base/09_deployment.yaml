@@ -36,6 +36,15 @@ spec:
                 secretKeyRef:
                   name: postgres-secret
                   key: user_password
+            - name: OTEL_JAVAAGENT_ENABLED
+              value: "true"
+            - name: OTEL_METRICS_EXPORTER
+              value: "none"
+            # move to overlays
+            #- name: OTEL_SERVICE_NAME
+            #  value: "single-svc"
+            - name: OTEL_TRACES_EXPORTER
+              value: "jaeger"
       volumes:
         - name: config-volume
           configMap:

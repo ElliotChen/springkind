@@ -3,11 +3,11 @@ import org.springframework.boot.gradle.tasks.bundling.*
 import org.apache.tools.ant.filters.*
 
 plugins {
-	id("org.springframework.boot") version "2.7.5"
-	id("io.spring.dependency-management") version "1.0.15.RELEASE"
-	kotlin("jvm") version "1.6.21"
-	kotlin("plugin.spring") version "1.6.21"
-	kotlin("plugin.jpa") version "1.6.21"
+	id("org.springframework.boot") version "3.0.0"
+	id("io.spring.dependency-management") version "1.1.0"
+	kotlin("jvm") version "1.7.21"
+	kotlin("plugin.spring") version "1.7.21"
+	kotlin("plugin.jpa") version "1.7.21"
 }
 
 group = "tw.elliot"
@@ -39,6 +39,7 @@ dependencies {
 	testImplementation("org.projectlombok:lombok:1.18.22")
 	compileOnly("org.projectlombok:lombok")
 	implementation("com.mysql:mysql-connector-j:8.0.31")
+	implementation("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	implementation("org.ajoberstar.grgit:grgit-core:4.1.1")
@@ -56,8 +57,16 @@ tasks.withType<Test> {
 }
 
 tasks.getByName<BootBuildImage>("bootBuildImage") {
-	imageName = "elliot/single/$activeProfile:"+imageVersion
-	isVerboseLogging = true
+	imageName.set("elliot/single/$activeProfile:"+imageVersion)
+	verboseLogging.set(true)
+	buildpacks.addAll("paketo-buildpacks/ca-certificates",
+		"paketo-buildpacks/bellsoft-liberica",
+		"paketo-buildpacks/syft",
+		"paketo-buildpacks/executable-jar",
+		"paketo-buildpacks/dist-zip",
+		"paketo-buildpacks/spring-boot",
+		"gcr.io/paketo-buildpacks/opentelemetry")
+	environment.put("BP_OPENTELEMETRY_ENABLED","true")
 }
 
 tasks.withType<ProcessResources> {
