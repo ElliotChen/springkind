@@ -1,3 +1,9 @@
 spring:
   profiles:
     active: @activeProfile@
+  application:
+    name: single-svc
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{trace_id:-},%X{span_id:-}]"
