@@ -3,11 +3,12 @@ import org.springframework.boot.gradle.tasks.bundling.*
 import org.apache.tools.ant.filters.*
 
 plugins {
-	id("org.springframework.boot") version "3.0.0"
+	id("org.springframework.boot") version "3.1.0"
 	id("io.spring.dependency-management") version "1.1.0"
-	kotlin("jvm") version "1.7.21"
-	kotlin("plugin.spring") version "1.7.21"
-	kotlin("plugin.jpa") version "1.7.21"
+	id("com.gorylenko.gradle-git-properties") version "2.4.1"
+	kotlin("jvm") version "1.8.21"
+	kotlin("plugin.spring") version "1.8.21"
+	kotlin("plugin.jpa") version "1.8.21"
 }
 
 group = "tw.elliot"
@@ -59,12 +60,8 @@ tasks.withType<Test> {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
 	imageName.set("elliot/single/$activeProfile:"+imageVersion)
 	verboseLogging.set(true)
-	buildpacks.addAll("paketo-buildpacks/ca-certificates",
-		"paketo-buildpacks/bellsoft-liberica",
-		"paketo-buildpacks/syft",
-		"paketo-buildpacks/executable-jar",
-		"paketo-buildpacks/dist-zip",
-		"paketo-buildpacks/spring-boot",
+	buildpacks.addAll(
+		"urn:cnb:builder:paketo-buildpacks/java",
 		"gcr.io/paketo-buildpacks/opentelemetry")
 	environment.put("BP_OPENTELEMETRY_ENABLED","true")
 }
@@ -83,8 +80,6 @@ tasks.withType<BootJar> {
 	} else {
 		exclude("application-*.yml")
 	}
-
-
 }
 
 tasks.register<Copy>("copyDependenciesToLib") {
@@ -94,3 +89,4 @@ tasks.register<Copy>("copyDependenciesToLib") {
 		println("copyDependenciesToLib:\n  ${project.configurations.runtimeClasspath.get().files.joinToString("\n  ") { it.absolutePath }}\n  ->\n  $buildDir/libs")
 	}
 }
+

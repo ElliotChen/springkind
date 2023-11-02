@@ -1,1 +1,1 @@
-rootProject.name = "sb"
+rootProject.name = "single"

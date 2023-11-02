@@ -1,0 +1,48 @@
+version: "3.3"
+
+services:
+
+  # redis:
+  #   image: redis:6-alpine
+  #   container_name: redis
+  #   ports:
+  #     - 6379:6379
+  #   volumes:
+  #     - ./data/redis:/data
+
+  spring:
+    image: elliot/trace:0.0.1-SNAPSHOT
+    container_name: trace-sv
+    environment:
+      #- JAVA_TOOL_OPTIONS=-javaagent:/workspace/BOOT-INF/lib/opentelemetry-javaagent-1.22.1.jar
+      - OTEL_JAVAAGENT_ENABLED=true
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaegertracing:14250
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_SERVICE_NAME=trace-sv
+      - OTEL_TRACES_EXPORTER=jaeger
+    ports:
+      - 8080:8080
+    # volumes:
+    #   - ./config/spring/application-docker.yml:/workspace/config/application-docker.yml
+    # depends_on:
+    #   postgresql: 
+    #     condition: service_healthy
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaegertracing
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_ZIPKIN_HOST_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14250:14250
+      - 14268:14268
+      - 14269:14269
+      - 4317:4317
+      - 4318:4318
+      - 9411:9411

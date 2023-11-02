@@ -1,0 +1,137 @@
+version: "3.3"
+
+services:
+  # mysql:
+  #   image: mysql:8.0
+  #   container_name: mysql
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: abcd1234
+  #   ports:
+  #     - 3306:3306
+  #   healthcheck:
+  #     test: mysqladmin ping -h localhost
+  #     interval: 5s
+  #     timeout: 10s
+  #     retries: 100
+  #   volumes:
+  #     - ./data/mysql:/var/lib/mysql
+
+  redis:
+    image: redis:6-alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./data/redis:/data
+
+  postgresql:
+    image: postgres:15.1-alpine
+    container_name: postgresql
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - TZ=Asia/Taipei
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./config/postgres/sql/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    healthcheck:
+      test: nc -z localhost 5432 || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  appemp:
+    image: elliot/emp/docker:latest
+    container_name: appemp
+    environment:
+      - OTEL_JAVAAGENT_ENABLED=true
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaegertracing:14250
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_SERVICE_NAME=employee-sv
+      - OTEL_TRACES_EXPORTER=jaeger
+    ports:
+      - 8081:8080
+    volumes:
+      - ./config/app_emp/application-docker.yml:/workspace/config/application-docker.yml
+    depends_on:
+      kafka: 
+        condition: service_healthy
+
+  appdep:
+    image: elliot/dep/docker:latest
+    container_name: appdep
+    environment:
+      - OTEL_JAVAAGENT_ENABLED=true
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaegertracing:14250
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_SERVICE_NAME=department-sv
+      - OTEL_TRACES_EXPORTER=jaeger
+    ports:
+      - 8080:8080
+    volumes:
+      - ./config/app_dep/application-docker.yml:/workspace/config/application-docker.yml
+    depends_on:
+      kafka: 
+        condition: service_healthy
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaegertracing
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+      - COLLECTOR_ZIPKIN_HOST_PORT=9411
+    ports:
+      - 5775:5775/udp
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14250:14250
+      - 14268:14268
+      - 14269:14269
+      - 4317:4317
+      - 4318:4318
+      - 9411:9411
+
+  kafka:
+    container_name: kafka
+    image: quay.io/strimzi/kafka:latest-kafka-${KAFKA_VERSION}
+    command:
+      [
+        "sh",
+        "-c",
+        "export CLUSTER_ID=$$(bin/kafka-storage.sh random-uuid) && 
+        bin/kafka-storage.sh format -t $$CLUSTER_ID -c config/kraft/server.properties && 
+        bin/kafka-server-start.sh config/kraft/server.properties --override advertised.listeners=$${KAFKA_ADVERTISED_LISTENERS} --override listener.security.protocol.map=$${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP} --override listeners=$${KAFKA_LISTENERS}
+        ",
+      ]
+    ports:
+      - "9092:9092"
+    environment:
+      TZ: ${TIME_ZONE}
+      LOG_DIR: "/tmp/logs"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_LISTENERS: PLAINTEXT://:29092,PLAINTEXT_HOST://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://172.20.10.2:9092
+    volumes:
+      - ./data/kafka/tmp/logs:/tmp/logs
+    healthcheck:
+      test: nc -z localhost 9092 || exit 1
+      interval: 5s
+      timeout: 10s
+      retries: 10
+
+  kafka-config:
+    container_name: kafka-config
+    image: quay.io/strimzi/kafka:latest-kafka-${KAFKA_VERSION}
+    depends_on:
+      kafka:
+        condition: service_healthy
+    command:
+      [
+        "sh",
+        "-c",
+        "bin/kafka-topics.sh --create --bootstrap-server kafka:9092 --if-not-exists --partitions 1 --replication-factor 1 --topic pubsub",
+      ]

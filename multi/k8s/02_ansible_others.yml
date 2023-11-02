@@ -1,0 +1,99 @@
+---
+
+- hosts: localhost
+
+  tasks:
+    - name: install metallb native 
+      shell: kubectl apply -f ./common/02_metallb-native.yaml
+      register: krs
+    - debug: 
+        msg: "{{ krs.stdout_lines }}"
+
+    - name: watch daemonset status
+      shell: kubectl rollout status -n metallb-system daemonset/speaker
+
+    - name: install metallb controller
+      shell: kubectl apply -f ./common/03_metallb-config.yaml
+      register: krs
+    - debug: 
+        msg: "{{ krs.stdout_lines }}"
+
+    - name: install istio
+      shell: istioctl install -f ./common/04_istio_install.yaml --skip-confirmation
+      register: irs
+
+    - name: verify istio installation
+      shell: istioctl verify-install -f ./common/04_istio_install.yaml
+      register: irs
+    - debug:
+        msg: "{{irs.stdout_lines}}"
+
+    - name: install istio extra addons
+      shell: kubectl apply -f ./extra
+      register: irs
+
+    - name: enable default injection
+      shell: kubectl label namespace default istio-injection=enabled --overwrite
+      register: irs
+    - debug:
+        msg: "{{irs.stdout_lines}}"
+    
+    - name: install redis
+      shell: kubectl apply -f ./common/05_redis_pv.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: watch redis status
+      shell: kubectl rollout status statefulsets/redis-sts
+
+    - name: install postgres
+      shell: kubectl apply -f ./common/06_postgres_pv.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: watch postgres status
+      shell: kubectl rollout status statefulsets/postgres-sts
+
+    - name: install namespace
+      shell: kubectl apply -f ./common/07_namespaces.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: install istio gateway
+      shell: kubectl apply -f ./common/08_istio_gateway.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: install argocd 
+      shell: kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: watch argocd-server status
+      shell: kubectl rollout status -n argocd deployment/argocd-server
+
+    - name: install argocd gateway
+      shell: kubectl apply -f ./common/09_argocd_gateway.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: install argocd service
+      shell: kubectl apply -f ./common/10_argocd_service.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: update argocd to insecure
+      shell: kubectl apply -f ./common/11_update_argocd-cmd-params-cm.yaml
+      register: krs
+    - debug:
+        msg: "{{krs.stdout_lines}}"
+
+    - name: restart argocd-server
+      shell: kubectl rollout restart deployments -n argocd argocd-server

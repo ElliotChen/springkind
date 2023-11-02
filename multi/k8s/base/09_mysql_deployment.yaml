@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+type: Opaque
+data:
+  root_password: YWJjZDEyMzQ=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: single
+  #namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: single
+  template:
+    metadata:
+      labels:
+        app: single
+    spec:
+      containers:
+        - name: single
+          image: single ##這裡會被取代
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config-volume
+              mountPath: /workspace/config
+          env:
+            - name: SECRETS_MYSQL_ROOT_PASSWORD
+              #value: abcd1234
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: root_password
+      volumes:
+        - name: config-volume
+          configMap:
+            name: single-config
+      restartPolicy: Always
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: single-svc
+spec:
+  type: ClusterIP
+  selector:
+    app: single
+  ports:
+  # Default port used by the image
+  - name: single
+    protocol: TCP
+    port: 8080

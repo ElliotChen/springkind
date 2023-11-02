@@ -30,6 +30,8 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - TZ=Asia/Taipei
+      - LANG=zh_TW.UTF-8
     ports:
       - 5432:5432
     volumes:

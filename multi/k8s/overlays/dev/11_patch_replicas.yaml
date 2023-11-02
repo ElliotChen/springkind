@@ -1,0 +1,15 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: single
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: single
+          env:
+            - name: OTEL_EXPORTER_JAEGER_ENDPOINT
+              value: "http://jaeger-collector.istio-system:14250"
+            - name: OTEL_SERVICE_NAME
+              value: "dev-single-svc"
