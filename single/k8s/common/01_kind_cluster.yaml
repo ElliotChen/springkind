@@ -30,7 +30,7 @@ nodes:
     protocol: TCP
 # Macos can't mount a propagation path. https://github.com/kubernetes-sigs/kind/issues/2400
   extraMounts:
-  - hostPath: /Users/elliot/k8s/kind/share
+  - hostPath: ~/k8s/kind/share
     containerPath: /share
 #    readOnly: false
 #    selinuxRelabel: false
