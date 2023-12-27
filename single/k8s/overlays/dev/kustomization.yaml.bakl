@@ -5,19 +5,14 @@ namePrefix: dev-
 resources:
 - ../../base
 - 10_istio_route.yaml
--
 patchesStrategicMerge:
 - 11_patch_replicas.yaml
 
-#configMapGenerator:
-#- files:
-#  - application-k8s.yml
-#  name: single-config
+configMapGenerator:
+- files:
+  - application-k8s.yml
+  name: single-config
 images:
 - name: single
   newName: localhost:5000/elliot/single/k8s
   newTag: latest
-
-generators:
-#  - merger.yaml
-  - merger_remote.yaml
