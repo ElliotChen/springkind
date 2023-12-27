@@ -5,7 +5,7 @@ namePrefix: dev-
 resources:
   - ../../base
   - 10_istio_route.yaml
-  -
+
 patchesStrategicMerge:
   - 11_patch_replicas.yaml
 
