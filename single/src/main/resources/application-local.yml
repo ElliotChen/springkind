@@ -23,9 +23,23 @@ spring:
 #    properties:
 #      hibernate:
 #        format_sql: true
-  data:
-    redis:
-      repositories:
-        enabled: true
-      host: 127.0.0.1
-      port: 6379
+#  data:
+#    redis:
+#      repositories:
+#        enabled: true
+#      host: 127.0.0.1
+#      port: 6379
+
+#otel:
+#  instrumentation:
+#    spring-webmvc:
+#      enabled: true
+#  exporter:
+#    logging:
+#      enabled: true
+#  springboot:
+#    resource:
+#      enabled: true
+#  resource:
+#    attributes:
+#      environment: local

@@ -14,7 +14,40 @@ management:
       enabled: true
     java:
       enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      endpoint: http://localhost:4318/v1/traces
 
 logging:
   pattern:
     level: "%5p [${spring.application.name:},%X{trace_id:-},%X{span_id:-}]"
+
+otel:
+  sdk:
+    disabled: false
+  exporter:
+    otlp:
+      endpoint: http://localhost:4318
+  traces:
+    sampler: parentbased_always_on
+    exporter: otlp
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+#  propagators:
+#    - tracecontext
+#    - baggage
+#    - b3
+#  propagators:
+#    b3:
+#      enabled: true
+#    tracecontext:
+#      enabled: true
+#    baggage:
+#      enabled: true
+#    jaeger:
+#      enabled: true

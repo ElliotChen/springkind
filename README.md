@@ -22,3 +22,8 @@ public class A {
 | HeadA | HeadB |
 |-------|-------|
 | D1    | D2    |
+
+
+## jaegertracing
+
+[jaegertracing](https://www.jaegertracing.io/docs/1.54/deployment/#all-in-one)

@@ -23,9 +23,9 @@ spring:
 #    properties:
 #      hibernate:
 #        format_sql: true
-  data:
-    redis:
-      repositories:
-        enabled: true
-      host: redis
-      port: 6379
+#  data:
+#    redis:
+#      repositories:
+#        enabled: true
+#      host: redis
+#      port: 6379

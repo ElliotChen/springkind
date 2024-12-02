@@ -18,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User findUserById(String id) {
+    log.info("Test For OpenTelemetry");
     return this.userRepo.findById(id).orElse(new User());
   }
 }

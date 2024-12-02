@@ -15,17 +15,17 @@
   </modules>
 
   <properties>
-    <java.version>17</java.version>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <java.version>21</java.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <spring.boot.version>3.1.0</spring.boot.version>
+    <spring.boot.version>3.3.2</spring.boot.version>
     <jasypt.version>3.0.4</jasypt.version>
-    <kotlin.version>1.8.20</kotlin.version>
+    <kotlin.version>1.9.22</kotlin.version>
 
     <docker.image.prefix>elliot</docker.image.prefix>
-    <plug.compiler.version>3.8.1</plug.compiler.version>
+    <plug.compiler.version>3.12.1</plug.compiler.version>
   </properties>
 
   <dependencyManagement>
@@ -45,7 +45,7 @@
       <dependency>
         <groupId>net.logstash.logback</groupId>
         <artifactId>logstash-logback-encoder</artifactId>
-        <version>7.2</version>
+        <version>7.4</version>
       </dependency>
       <!--
       <dependency>
@@ -70,7 +70,7 @@
       <dependency>
         <groupId>org.springframework.kafka</groupId>
         <artifactId>spring-kafka</artifactId>
-        <version>3.0.8</version>
+        <version>3.2.2</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

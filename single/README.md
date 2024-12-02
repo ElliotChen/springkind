@@ -344,6 +344,8 @@ echo -n 'super-secret-password' | base64
 
 kustomize build ./overlays/dev
 
+kustomize build --enable-alpha-plugins --as-current-user ./overlays/dev
+
 kustomize build ./overlays/default | k apply -f -  
 ```
 

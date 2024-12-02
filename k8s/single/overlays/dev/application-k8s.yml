@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    username: postgres
+    password: ${SECRETS_POSTGRES_PASSWORD}
+    url: jdbc:postgresql://postgres-svc.default:5432/postgres
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  data:
+    redis:
+      repositories:
+        enabled: true
+      host: redis-svc.default
+      port: 6379

@@ -43,6 +43,10 @@ spec:
                 port: 15443
                 targetPort: 15443
                 nodePort: 31443
+              - name: spring
+                port: 9080
+                targetPort: 9080
+                nodePort: 30098
         name: istio-ingressgateway
     istiodRemote:
       enabled: false
@@ -76,7 +80,7 @@ spec:
           port: 4317
           service: opentelemetry-collector.otel-collector.svc.cluster.local
   profile: demo
-  tag: 1.19.3
+  tag: 1.20.0
   values:
     base:
       enableCRDTemplates: false
@@ -147,9 +151,9 @@ spec:
         includeIPRanges: '*'
         logLevel: warning
         privileged: false
-        readinessFailureThreshold: 30
-        readinessInitialDelaySeconds: 1
-        readinessPeriodSeconds: 2
+        readinessFailureThreshold: 4
+        readinessInitialDelaySeconds: 0
+        readinessPeriodSeconds: 15
         resources:
           limits:
             cpu: 2000m
@@ -157,6 +161,9 @@ spec:
           requests:
             cpu: 10m
             memory: 40Mi
+        startupProbe:
+          enabled: true
+          failureThreshold: 600
         statusPort: 15020
         tracer: zipkin
       proxy_init:
@@ -203,3 +210,4 @@ spec:
           logging: false
           monitoring: false
           topology: false
+
